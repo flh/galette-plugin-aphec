@@ -1,13 +1,6 @@
 <?php
-namespace GaletteMaps\Controllers;
-
-use Galette\Controllers\AbstractPluginController;
-use Psr\Container\ContainerInterface;
-use Slim\Http\Request;
-use Slim\Http\Response;
-
 /**
- * Contrôleur du plugin APHEC
+ * Contrôleur pour la gestion des inscriptions par un adhérent
  *
  * @category  Controllers
  * @name      ListsController
