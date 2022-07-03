@@ -1,5 +1,8 @@
 <?php
 
+use Aphec\Controllers\AdminListsController;
+use Aphec\Controllers\ListsController;
+
 // Routes pour les adhérents
 $this->get(
     '/lists',
