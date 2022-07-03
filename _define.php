@@ -8,7 +8,7 @@ $this->register(
     'aphec',                            //routing name and translation domain
     '2022-05-26',                       //Date
     [   //Permissions needed - not yet implemented
-        'routename'      => 'acl',
+        'aphec_lists_get' => 'bureau',
         'anotherroute'   => 'anotheracl'
     ]
 );

@@ -3,12 +3,19 @@
  * Contrôleur pour la gestion des inscriptions par un adhérent
  *
  * @category  Controllers
- * @name      ListsController
+ * @name	  ListsController
  * @package   Galette
- * @author    Florian Hatat
+ * @author	Florian Hatat
  * @copyright 2022 Florian Hatat
  * @license   http://www.gnu.org/licenses/gpl-3.0.html GPL License 3.0 or (at your option) any later version
  */
+
+namespace Aphec\Controllers;
+
+use Galette\Controllers\AbstractPluginController;
+use Psr\Container\ContainerInterface;
+use Slim\Http\Request;
+use Slim\Http\Response;
 
 class ListsController extends AbstractPluginController
 {

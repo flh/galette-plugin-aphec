@@ -1,11 +1,4 @@
 <?php
-namespace Aphec\Controllers;
-
-use Galette\Controllers\AbstractPluginController;
-use Psr\Container\ContainerInterface;
-use Slim\Http\Request;
-use Slim\Http\Response;
-
 /**
  * Contrôleur du plugin APHEC
  *
@@ -17,7 +10,13 @@ use Slim\Http\Response;
  * @license   http://www.gnu.org/licenses/gpl-3.0.html GPL License 3.0 or (at your option) any later version
  */
 
+namespace Aphec\Controllers;
+
+use Galette\Controllers\AbstractPluginController;
 use Galette\Core\Db as GaletteDb;
+use Psr\Container\ContainerInterface;
+use Slim\Http\Request;
+use Slim\Http\Response;
 
 class AdminListsController extends AbstractPluginController
 {
