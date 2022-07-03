@@ -19,19 +19,68 @@ use Slim\Http\Response;
 
 class ListsController extends AbstractPluginController
 {
-    /**
-     * @Inject("Plugin APHEC pour Galette")
-     * @var integer
-     */
-    protected $module_info;
+	/**
+	 * @Inject("Plugin Aphec")
+	 * @var integer
+	 */
+	protected $module_info;
 
-    public function get_lists(Request $request, Response $response) : Response
-    {
-	return $response;
-    }
+	/**
+	 * Trouver toutes les listes auxquelles un adhérent peut s'abonner
+	 */
+	public function get_lists(Request $request, Response $response) : Response
+	{
+		// Récupération de la liste des abonnements pour l'adhérent
+		$query = $this->zdb->db->query('
+SELECT DISTINCT
+  list.list_name AS list_name,
+  sub.is_subscribed AS manual,
+  prof.id_list AS automatic
+FROM aphec_lists list
+  LEFT JOIN (
+	aphec_lists_profiles prof
+	JOIN galette_dynamic_fields dfields
+	ON prof.id_profile=dfields.field_val AND dfields.field_id=4 AND dfields.field_form="adh"
+	   AND dfields.item_id=?
+  ) ON list.id_list=prof.id_list
+  LEFT JOIN aphec_lists_subscriptions sub ON sub.id_list=list.id_list AND sub.id_adh=?',
+			[$this->login->id, $this->login->id]);
 
-    public function set_lists(Request $request, Response $response) : Response
-    {
-	return $response;
-    }
+		$results = $this->zdb->execute($query);
+
+		$list_subscriptions = [];
+		foreach($results as $row) {
+			if(is_null($row->manual)) {
+				$status = 'automatic';
+			}
+			elseif($row->manual) {
+				$status = 'opt-in';
+			}
+			else {
+				$status = 'opt-out';
+			}
+			$list_subscriptions[] = [
+				'list_name' => $row['list_name'],
+				'status' => $status,
+				'automatic_subscribed' => !is_null($row['automatic']),
+			];
+		}
+
+		$this->view->render(
+			$response,
+			'file:[' . $this->getModuleRoute() . ']member_lists.tpl', [
+				'list_subscriptions' => $list_subscriptions,
+			]
+		);
+
+		return $response;
+	}
+
+	/**
+	 * Modifier les listes auxquelles un adhérent est abonné.
+	 */
+	public function set_lists(Request $request, Response $response) : Response
+	{
+		return $response;
+	}
 }
