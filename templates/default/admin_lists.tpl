@@ -13,19 +13,21 @@ compte, faire ensuite d'autres choix que ce réglage par défaut.</p>
   <span class="aphec-list-title">{$aphec_list.name}</span>
   <span class="aphec-list-description">{$aphec_list.description}</span>
   <span class="aphec-list-authorized">
-    <input type="checkbox" id="list-{$list_id}-authorized" name="list-{$list_id}"{if $aphec_list.authorized} checked{/if}>
+    <input type="checkbox" id="list-{$list_id}-authorized" name="list-{$list_id}-authorized"{if $aphec_list.authorized} checked{/if}>
     <label for="list-{$list_id}-authorized">Accessible aux adhérents</label>
   </span>
   <span class="aphec-list-profiles">
-    <label for="list-{$list_id}-profiles">Profils inscrits par défaut</label>
-    <select name="list-{$list_id}-profiles[]" multiple>
+    <label for="list-{$list_id}-profiles[]">Profils inscrits par défaut</label>
+    <ul>
       {foreach $matieres as $matiere_id => $matiere_label}
-        <option value="{$matiere_id}"{if $aphec_list.matieres.$matiere_id} selected{/if}>{$matiere_label}</option>
+      <li><label><input type="checkbox" name="list-{$list_id}-profiles[]" value="{$matiere_id}"{if $matiere_id|in_array:$aphec_list.matieres} checked{/if}>{$matiere_label}</label></li>
       {/foreach}
-    </select>
+    </ul>
   </span>
 </li>
 {/foreach}
 </ul>
-<p><input type="submit" name="list-profiles-save" value="Enregistrer les inscriptions"></p>
+<p><input type="submit" name="list-profiles-save" value="Enregistrer les réglages">
+{include file="forms_types/csrf.tpl"}</p>
 </form>
+{/block}
