@@ -21,7 +21,7 @@ use Slim\Http\Response;
 class AdminListsController extends AbstractPluginController
 {
 	/**
-	 * @Inject("Plugin APHEC pour Galette")
+	 * @Inject("Plugin Aphec")
 	 * @var integer
 	 */
 	protected $module_info;
@@ -40,11 +40,10 @@ class AdminListsController extends AbstractPluginController
 			'PWD_DB' => PWD_DB,
 			'NAME_DB' => 'sympa', // TODO get from config?
 		]);
-		$query = $sympa_db->db->query(
-			"SELECT name_list FROM list_table WHERE status_list='open'",
+		$sympa_lists_rs = $sympa_db->db->query(
+			"SELECT name_list FROM list_table WHERE status_list='open' AND name_list LIKE 'aphec-%'",
 			\Laminas\Db\Adapter\Adapter::QUERY_MODE_EXECUTE
 		);
-		$sympa_lists_rs = $sympa_db->execute($query);
 		$sympa_lists = [];
 		foreach($sympa_lists_rs as $sympa_list) {
 			$sympa_lists[] = $sympa_list->name_list;
@@ -53,18 +52,18 @@ class AdminListsController extends AbstractPluginController
 		// Liste de toutes les matières possibles pour les adhérents
 		/* TODO le nom de la table est codé en dur, il faudrait le retrouver
 		   proprement avec l'API Galette. */
-		$matieres_results = $this->zdb->execute($this->zdb->query('field_contents_4'));
+		$matieres_rs = $this->zdb->execute($this->zdb->select('field_contents_4'));
 		$matieres = [];
 		foreach($matieres_rs as $matiere) {
-			$matieres[$matiere->id] = $matiere->name;
+			$matieres[$matiere->id] = $matiere->val;
 		}
 
-		$aphec_lists_rs = $this->zdb->execute($this->zdb->query('aphec_lists')->order('sympa_name'));
+		$aphec_lists_rs = $this->zdb->execute($this->zdb->select('aphec_lists')->order('sympa_name'));
 		$aphec_lists = [];
 		foreach($aphec_lists_rs as $aphec_list) {
 			if(!in_array($aphec_list->sympa_name, $sympa_lists)) {
 				// Suppressions des listes qui ne sont plus dans Sympa
-				$query = $this->zdb->delete('aphec_lists')->where(function($w) {
+				$query = $this->zdb->delete('aphec_lists')->where(function($w) use ($aphec_list) {
 					$w->equalTo('id_list', $aphec_list->id_list);
 				});
 				$this->zdb->execute($query);
@@ -74,7 +73,7 @@ class AdminListsController extends AbstractPluginController
 				$aphec_lists[$aphec_list->id_list] = [
 					"name" => $aphec_list->sympa_name,
 					"description" => $aphec_list->sympa_description,
-					"authorized" => boolval($aphec_list->authorized),
+					"authorized" => intval(boolval($aphec_list->authorized)),
 					"matieres" => [],
 				];
 			}
@@ -86,19 +85,20 @@ class AdminListsController extends AbstractPluginController
 			$query = $this->zdb->insert('aphec_lists')->values([
 				'sympa_name' => $list_name,
 				'sympa_description' => '',
-				'authorized' => false,
+				'authorized' => 0,
 			]);
-			$this->zdb->execute($query);
+			$entity = $this->zdb->execute($query);
+			$list_id = $this->zdb->getLastGeneratedValue($entity);
 			// Et on les déclare aussi pour le formulaire
-			$aphec_lists[$aphec_list->id_list] = [
+			$aphec_lists[$list_id] = [
 				"name" => $list_name,
 				"description" => '',
-				"authorized" => false,
+				"authorized" => 0,
 				"matieres" => [],
 			];
 		}
 
-		$profiles_rs = $this->zdb->execute($this->zdb->query('aphec_lists_profiles'));
+		$profiles_rs = $this->zdb->execute($this->zdb->select('aphec_lists_profiles'));
 		foreach($profiles_rs as $profile) {
 			$aphec_lists[$profile->id_list]["matieres"][] = $profile->id_profile;
 		}
@@ -109,6 +109,7 @@ class AdminListsController extends AbstractPluginController
 			[
 				"aphec_lists" => $aphec_lists,
 				"matieres" => $matieres,
+				"page_title" => "Réglages des listes de diffusion",
 			]
 		);
 		return $response;
@@ -122,41 +123,47 @@ class AdminListsController extends AbstractPluginController
 		$post = $request->getParsedBody();
 
 		// Modifications à faire de façon atomique
-		$this->zdb->beginTransaction();
+		$this->zdb->db->getDriver()->getConnection()->beginTransaction();
 
-		$aphec_lists_rs = $this->zdb->execute($this->zdb->query('aphec_lists'));
+		$aphec_lists_rs = $this->zdb->execute($this->zdb->select('aphec_lists'));
 		foreach($aphec_lists_rs as $aphec_list) {
 			// Listes accessibles ou non
 			$query = $this->zdb->update('aphec_lists')->set([
-				'authorized' => isset($post["list-{$aphec_list->id_list}-authorized"])
+				'authorized' => ($post["list-{$aphec_list->id_list}-authorized"] ?? '') == 'on' ? 1 : 0,
 			])->where(['id_list' => $aphec_list->id_list]);
 			$this->zdb->execute($query);
 
 			// Suppression des profils d'inscription désactivés
-			$selected_profiles = $post["list-{$aphec_list->id_list}-profiles"];
-			$query = $this->zdb->delete('aphec_profiles')->where(function($w) {
-				$w->equalTo('id_list', $aphec_list->id_list);
-				$w->notIn($selected_profiles);
-			});
-			$this->zdb->execute($query);
-			// Ajout des profils d'incription sélectionnés
-			foreach($selected_profiles as $profile) {
+			$selected_profiles = [];
+			foreach(($post["list-{$aphec_list->id_list}-profiles"] ?? []) as $profile_str) {
 				// Filtre élémentaire pour retirer des valeurs soumises
 				// aberrantes. Le gestionnaire de base de données est censé
 				// faire le reste en vérifiant la clé étrangère id_profile.
-				if(!is_int($profile)) {
-					continue;
+				if(is_numeric($profile_str)) {
+					$selected_profiles[] = intval($profile_str);
 				}
-				$query = $this->zdb->insert('aphec_profiles')->values([
+			}
+			// On retire tout, on ajoute les profils sélectionnés
+			// au paragraphe suivant. Ceci évite de devoir faire
+			// attention à éviter de ré-insérer les profils déjà
+			// existants.
+			$query = $this->zdb->delete('aphec_lists_profiles')->where(function($w) use ($aphec_list, $selected_profiles) {
+				$w->equalTo('id_list', $aphec_list->id_list);
+			});
+			$this->zdb->execute($query);
+
+			// Ajout des profils d'incription sélectionnés
+			foreach($selected_profiles as $profile) {
+				$query = $this->zdb->insert('aphec_lists_profiles')->values([
 					'id_list' => $aphec_list->id_list,
-					'id_profile' => intval($profile),
+					'id_profile' => $profile,
 				]);
 				$this->zdb->execute($query);
 			}
 		}
 
 		// Fin de la transaction
-		$this->zdb->commit();
+		$this->zdb->db->getDriver()->getConnection()->commit();
 
 		return $response->withRedirect($this->router->pathFor('aphec_lists_admin'), 302);
 	}
