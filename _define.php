@@ -4,7 +4,7 @@ $this->register(
     'Gestion des services APHEC',       //Short description
     'Florian Hatat',                    //Author
     '1',                                //Version
-    '0.9',                              //Galette version compatibility
+    '0.9.6',                              //Galette version compatibility
     'aphec',                            //routing name and translation domain
     '2022-05-26',                       //Date
     [   //Permissions needed - not yet implemented
