@@ -100,7 +100,7 @@ class AdminListsController extends AbstractPluginController
 
 		$profiles_rs = $this->zdb->execute($this->zdb->query('aphec_lists_profiles'));
 		foreach($profiles_rs as $profile) {
-			$aphec_lists[$profile->id_list]["profiles"][] = $profile->id_profile;
+			$aphec_lists[$profile->id_list]["matieres"][] = $profile->id_profile;
 		}
 
 		$this->view->render(
