@@ -1,6 +1,8 @@
 .aphec-list-title {
 	display: block;
 	margin-top: 0.4rem;
+	font-weight: bold;
+	font-size: 120%;
 }
 .aphec-list-description {
 	display: block;
@@ -10,4 +12,11 @@
 }
 .aphec-list-profiles {
 	display: block;
+}
+.aphec-list-profiles > ul {
+	display: block;
+	list-style: none;
+}
+.aphec-list-profiles > ul > li {
+	display: inline;
 }
