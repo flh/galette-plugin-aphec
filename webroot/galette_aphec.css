@@ -1,13 +1,13 @@
-#aphec-list-title {
+.aphec-list-title {
 	display: block;
 	margin-top: 0.4rem;
 }
-#aphec-list-description {
+.aphec-list-description {
 	display: block;
 }
-#aphec-list-authorized {
+.aphec-list-authorized {
 	display: block;
 }
-#aphec-list-profiles {
+.aphec-list-profiles {
 	display: block;
 }
