@@ -44,6 +44,7 @@ FROM galette_aphec_lists list
 	   AND dfields.item_id=?
   ) ON list.id_list=prof.id_list
   LEFT JOIN galette_aphec_lists_subscriptions sub ON sub.id_list=list.id_list AND sub.id_adh=?
+WHERE list.authorized
 ORDER BY list_name',
 			[$this->login->id, $this->login->id]);
 
