@@ -123,7 +123,7 @@ class AdminListsController extends AbstractPluginController
 		$post = $request->getParsedBody();
 
 		// Modifications à faire de façon atomique
-		$this->zdb->db->getDriver()->getConnection()->beginTransaction();
+		$this->zdb->connection->beginTransaction();
 
 		$aphec_lists_rs = $this->zdb->execute($this->zdb->select('aphec_lists'));
 		foreach($aphec_lists_rs as $aphec_list) {
@@ -163,7 +163,7 @@ class AdminListsController extends AbstractPluginController
 		}
 
 		// Fin de la transaction
-		$this->zdb->db->getDriver()->getConnection()->commit();
+		$this->zdb->connection->commit();
 
 		return $response->withRedirect($this->router->pathFor('aphec_lists_admin'), 302);
 	}
