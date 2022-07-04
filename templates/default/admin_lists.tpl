@@ -7,9 +7,9 @@ réglages par défaut, de telle sorte qu'en fonction de leur matière les
 adhérents sont automatiquement inscrits. Ils peuvent manuellement, depuis leur
 compte, faire ensuite d'autres choix que ce réglage par défaut.</p>
 <form method="POST" action="{path_for name="aphec_lists_admin_set"}">
-<ul>
+<ul id="aphec-lists-admin">
 {foreach $aphec_lists as $list_id => $aphec_list}
-<li>
+<li class="aphec-list ui-state-active ui-corner-top">
   <span class="aphec-list-title">{$aphec_list.name}</span>
   <span class="aphec-list-description">{$aphec_list.description}</span>
   <span class="aphec-list-authorized">

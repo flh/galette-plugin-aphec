@@ -1,3 +1,8 @@
+.aphec-lists-admin {
+	display: block;
+	padding: 0;
+	list-style: none;
+}
 .aphec-list-title {
 	display: block;
 	margin-top: 0.4rem;
@@ -16,6 +21,7 @@
 .aphec-list-profiles > ul {
 	display: block;
 	list-style: none;
+	padding: 0;
 }
 .aphec-list-profiles > ul > li {
 	display: inline;
