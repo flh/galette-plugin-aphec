@@ -3,6 +3,9 @@
 	padding: 0;
 	list-style: none;
 }
+.aphec-list {
+	margin-top: 0.7em;
+}
 .aphec-list-title {
 	display: block;
 	margin-top: 0.4rem;
@@ -17,6 +20,10 @@
 }
 .aphec-list-profiles {
 	display: block;
+	margin-top: 0.4em;
+}
+.aphec-list-profiles > label {
+	font-weight: bold;
 }
 .aphec-list-profiles > ul {
 	display: block;

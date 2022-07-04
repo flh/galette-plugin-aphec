@@ -17,10 +17,10 @@ compte, faire ensuite d'autres choix que ce réglage par défaut.</p>
     <label for="list-{$list_id}-authorized">Accessible aux adhérents</label>
   </span>
   <span class="aphec-list-profiles">
-    <label for="list-{$list_id}-profiles[]">Profils inscrits par défaut</label>
+    <label>Profils inscrits par défaut</label>
     <ul>
       {foreach $matieres as $matiere_id => $matiere_label}
-      <li><label><input type="checkbox" name="list-{$list_id}-profiles[]" value="{$matiere_id}"{if $matiere_id|in_array:$aphec_list.matieres} checked{/if}>{$matiere_label}</label></li>
+      <li><label><input type="checkbox" name="list-{$list_id}-profiles[]" value="{$matiere_id}"{if $matiere_id|in_array:$aphec_list.matieres} checked{/if}> {$matiere_label}</label></li>
       {/foreach}
     </ul>
   </span>
