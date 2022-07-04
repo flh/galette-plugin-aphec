@@ -11,8 +11,8 @@ d'adhérent.</p>
 <ul>
 {foreach from=$list_subscriptions item=subscription}
 <li>
-  <span class="aphec-list-title"></span>
-  <span class="aphec-list-description"></span>
+  <span class="aphec-list-title">{$subscription.list_name}</span>
+  <span class="aphec-list-description">{$subscription.list_description}</span>
   <ul class="aphec-list-subscription-mode">
     <li>
       <input type="radio" id="subscription-{$subscription.list_name}-optin" name="subscription-{$subscription.list_name}" value="optin"{if $subscription.status == 'opt-in'} checked{/if}>
