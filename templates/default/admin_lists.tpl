@@ -9,8 +9,8 @@ compte, faire ensuite d'autres choix que ce réglage par défaut.</p>
 <form method="POST" action="{path_for name="aphec_lists_admin_set"}">
 <ul id="aphec-lists-admin">
 {foreach $aphec_lists as $list_id => $aphec_list}
-<li class="aphec-list ui-state-active ui-corner-top">
-  <span class="aphec-list-title">{$aphec_list.name}</span>
+<li class="aphec-list">
+  <span class="aphec-list-title ui-state-active ui-corner-top">{$aphec_list.name}</span>
   <span class="aphec-list-description">{$aphec_list.description}</span>
   <span class="aphec-list-authorized">
     <input type="checkbox" id="list-{$list_id}-authorized" name="list-{$list_id}-authorized"{if $aphec_list.authorized} checked{/if}>
