@@ -101,18 +101,20 @@ ORDER BY list_name',
 		foreach($lists_rs as $list) {
 			$mode = $post["subscription-{$list->sympa_name}"] ?? null;
 			if($mode === 'optin') {
-				$this->zdb->insert('aphec_lists_subscriptions')->values([
+				$query = $this->zdb->insert('aphec_lists_subscriptions')->values([
 					'id_adh' => $this->login->id,
 					'id_list' => $list->id_list,
 					'is_subscribed' => 1,
 				]);
+				$this->zdb->execute($query);
 			}
 			elseif($mode === 'optout') {
-				$this->zdb->insert('aphec_lists_subscriptions')->values([
+				$query = $this->zdb->insert('aphec_lists_subscriptions')->values([
 					'id_adh' => $this->login->id,
 					'id_list' => $list->id_list,
 					'is_subscribed' => 0,
 				]);
+				$this->zdb->execute($query);
 			}
 			elseif($mode === 'automatic') {
 				// Rien pour l'instant, on supprimé toutes les lignes plus haut.
