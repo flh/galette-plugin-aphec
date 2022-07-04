@@ -31,7 +31,7 @@ class ListsController extends AbstractPluginController
 	public function get_lists(Request $request, Response $response) : Response
 	{
 		// Récupération de la liste des abonnements pour l'adhérent
-		$query = $this->zdb->db->query('
+		$results = $this->zdb->db->query('
 SELECT DISTINCT
   list.sympa_name AS list_name,
   sub.is_subscribed AS manual,
@@ -46,8 +46,6 @@ FROM galette_aphec_lists list
   LEFT JOIN galette_aphec_lists_subscriptions sub ON sub.id_list=list.id_list AND sub.id_adh=?
 ORDER BY list_name',
 			[$this->login->id, $this->login->id]);
-
-		$results = $this->zdb->execute($query);
 
 		$list_subscriptions = [];
 		foreach($results as $row) {
