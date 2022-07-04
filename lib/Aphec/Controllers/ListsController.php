@@ -33,7 +33,7 @@ class ListsController extends AbstractPluginController
 		// Récupération de la liste des abonnements pour l'adhérent
 		$query = $this->zdb->db->query('
 SELECT DISTINCT
-  list.list_name AS list_name,
+  list.sympa_name AS list_name,
   sub.is_subscribed AS manual,
   prof.id_list AS automatic
 FROM galette_aphec_lists list
