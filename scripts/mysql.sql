@@ -24,6 +24,7 @@ CREATE TABLE galette_aphec_lists_subscriptions (
   is_subscribed tinyint(1) NOT NULL,
   FOREIGN KEY (id_list) REFERENCES galette_aphec_lists (id_list) ON DELETE CASCADE ON UPDATE CASCADE,
   FOREIGN KEY (id_adh) REFERENCES galette_adherents (id_adh) ON DELETE CASCADE ON UPDATE CASCADE
+  PRIMARY KEY (id_adh, id_list)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- Cette table définit l'ensemble des listes de diffusion par défaut selon les
@@ -31,6 +32,7 @@ CREATE TABLE galette_aphec_lists_subscriptions (
 CREATE TABLE galette_aphec_lists_profiles (
   id_list int(10) unsigned NOT NULL,
   id_profile int(11) NOT NULL,
+  UNIQUE (id_list, id_profile),
   PRIMARY KEY (id_list, id_profile),
   FOREIGN KEY (id_list) REFERENCES galette_aphec_lists (id_list) ON DELETE CASCADE ON UPDATE CASCADE
   -- La table galette_field_contents_4 est créée par le champ dynamique n°4
