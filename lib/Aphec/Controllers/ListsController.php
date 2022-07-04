@@ -84,6 +84,43 @@ ORDER BY list_name',
 	 */
 	public function set_lists(Request $request, Response $response) : Response
 	{
-		return $response;
+		// On récupère d'abord les listes ouvertes à l'inscription
+		$query = $this->zdb->select('aphec_lists')->where(['authorized' => 1]);
+		$lists_rs = $this->zdb->execute($query);
+
+		$post = $request->getParsedBody();
+
+		// Pour chacune, on enregistre l'état d'inscription demandé par
+		// l'adhérent. On se place dans une transaction afin de pouvoir
+		// tranquillement supprimer toutes les lignes anciennes et ajouter les
+		// nouvelles ensuite, de manière atomique.
+		$this->zdb->connection->beginTransaction();
+		$query = $this->zdb->delete('aphec_lists_subscriptions')->where([
+			'id_adh' => $this->login->id]);
+		$this->zdb->execute($query);
+		foreach($lists_rs as $list) {
+			$mode = $post["subscription-{$list_rs->list_name}"] ?? null;
+			if($mode === 'optin') {
+				$this->zdb->insert('aphec_lists_subscriptions')->values([
+					'id_adh' => $this->login->id,
+					'id_list' => $list->id_list,
+					'is_subscribed' => 1,
+				]);
+			}
+			elseif($mode === 'optout') {
+				$this->zdb->insert('aphec_lists_subscriptions')->values([
+					'id_adh' => $this->login->id,
+					'id_list' => $list->id_list,
+					'is_subscribed' => 0,
+				]);
+			}
+			elseif($mode === 'automatic') {
+				// Rien pour l'instant, on supprimé toutes les lignes plus haut.
+				// TODO il ne faudrait supprimer que les lignes mentionnées en "automatic" et laisser les autres intactes, pour permettre des changements partiels.
+			}
+		}
+		$this->zdb->connection->commit();
+
+		return $response->withRedirect($this->router->pathFor('aphec_lists'), 302);
 	}
 }

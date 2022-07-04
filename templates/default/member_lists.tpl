@@ -31,7 +31,8 @@ d'adhérent.</p>
 </li>
 {/foreach}
 </ul>
-<p><input type="submit" name="subscription-save" value="Enregistrer les inscriptions"></p>
+<p><input type="submit" name="subscription-save" value="Enregistrer les inscriptions">
+{include file="forms_types/csrf.tpl"}</p>
 </form>
 
 <h2>Gestion des options d'abonné</h2>
