@@ -99,7 +99,7 @@ ORDER BY list_name',
 			'id_adh' => $this->login->id]);
 		$this->zdb->execute($query);
 		foreach($lists_rs as $list) {
-			$mode = $post["subscription-{$list_rs->list_name}"] ?? null;
+			$mode = $post["subscription-{$list->list_name}"] ?? null;
 			if($mode === 'optin') {
 				$this->zdb->insert('aphec_lists_subscriptions')->values([
 					'id_adh' => $this->login->id,
