@@ -121,6 +121,6 @@ ORDER BY list_name',
 		}
 		$this->zdb->connection->commit();
 
-		return $response->withRedirect($this->router->pathFor('aphec_lists'), 302);
+		return $response->withRedirect($this->router->pathFor('aphec_lists_get'), 302);
 	}
 }
