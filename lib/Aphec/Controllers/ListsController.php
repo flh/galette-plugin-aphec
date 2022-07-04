@@ -43,7 +43,8 @@ FROM aphec_lists list
 	ON prof.id_profile=dfields.field_val AND dfields.field_id=4 AND dfields.field_form="adh"
 	   AND dfields.item_id=?
   ) ON list.id_list=prof.id_list
-  LEFT JOIN aphec_lists_subscriptions sub ON sub.id_list=list.id_list AND sub.id_adh=?',
+  LEFT JOIN aphec_lists_subscriptions sub ON sub.id_list=list.id_list AND sub.id_adh=?
+ORDER BY list_name',
 			[$this->login->id, $this->login->id]);
 
 		$results = $this->zdb->execute($query);
@@ -70,6 +71,7 @@ FROM aphec_lists list
 			$response,
 			'file:[' . $this->getModuleRoute() . ']member_lists.tpl', [
 				'list_subscriptions' => $list_subscriptions,
+				'page_title' => 'Inscriptions aux listes de diffusion',
 			]
 		);
 
