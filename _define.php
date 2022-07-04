@@ -7,8 +7,10 @@ $this->register(
     '0.9.6',                              //Galette version compatibility
     'aphec',                            //routing name and translation domain
     '2022-05-26',                       //Date
-    [   //Permissions needed - not yet implemented
-        'aphec_lists_get' => 'bureau',
-        'anotherroute'   => 'anotheracl'
+    [
+        'aphec_lists_get' => 'member',
+        'aphec_lists_set' => 'member',
+        'aphec_lists_admin' => 'staff',
+        'aphec_lists_admin_set' => 'staff',
     ]
 );
