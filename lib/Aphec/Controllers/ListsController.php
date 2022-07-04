@@ -60,6 +60,7 @@ ORDER BY list_name',
 			}
 			$list_subscriptions[] = [
 				'list_name' => $row['list_name'],
+				'list_description' => '',
 				'status' => $status,
 				'automatic_subscribed' => !is_null($row['automatic']),
 			];
