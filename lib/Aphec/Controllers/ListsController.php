@@ -36,14 +36,14 @@ SELECT DISTINCT
   list.list_name AS list_name,
   sub.is_subscribed AS manual,
   prof.id_list AS automatic
-FROM aphec_lists list
+FROM galette_aphec_lists list
   LEFT JOIN (
-	aphec_lists_profiles prof
+	galette_aphec_lists_profiles prof
 	JOIN galette_dynamic_fields dfields
 	ON prof.id_profile=dfields.field_val AND dfields.field_id=4 AND dfields.field_form="adh"
 	   AND dfields.item_id=?
   ) ON list.id_list=prof.id_list
-  LEFT JOIN aphec_lists_subscriptions sub ON sub.id_list=list.id_list AND sub.id_adh=?
+  LEFT JOIN galette_aphec_lists_subscriptions sub ON sub.id_list=list.id_list AND sub.id_adh=?
 ORDER BY list_name',
 			[$this->login->id, $this->login->id]);
 
