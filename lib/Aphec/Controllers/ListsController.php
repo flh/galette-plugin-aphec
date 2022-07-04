@@ -34,6 +34,7 @@ class ListsController extends AbstractPluginController
 		$results = $this->zdb->db->query('
 SELECT DISTINCT
   list.sympa_name AS list_name,
+  list.sympa_description AS list_description,
   sub.is_subscribed AS manual,
   prof.id_list AS automatic
 FROM galette_aphec_lists list
@@ -60,10 +61,10 @@ ORDER BY list_name',
 				$status = 'opt-out';
 			}
 			$list_subscriptions[] = [
-				'list_name' => $row['list_name'],
-				'list_description' => '',
+				'list_name' => $row->list_name,
+				'list_description' => $row->list_description,
 				'status' => $status,
-				'automatic_subscribed' => !is_null($row['automatic']),
+				'automatic_subscribed' => !is_null($row->automatic),
 			];
 		}
 
