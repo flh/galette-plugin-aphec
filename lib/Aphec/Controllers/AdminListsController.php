@@ -98,6 +98,12 @@ class AdminListsController extends AbstractPluginController
 			];
 		}
 
+		// Mise à jour des descriptions pour les listes déjà existantes
+		foreach(array_intersect(array_keys($sympa_lists), $seen_aphec_lists) as $list_name) {
+			$query = $this->zdb->update('aphec_lists')->set(['sympa_description' => $sympa_lists[$list_name]])->where(['sympa_name' => $list_name]);
+			$this->zdb->execute($query);
+		}
+
 		$profiles_rs = $this->zdb->execute($this->zdb->select('aphec_lists_profiles'));
 		foreach($profiles_rs as $profile) {
 			$aphec_lists[$profile->id_list]["matieres"][] = $profile->id_profile;
