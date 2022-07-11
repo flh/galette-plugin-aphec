@@ -41,12 +41,12 @@ class AdminListsController extends AbstractPluginController
 			'NAME_DB' => 'sympa', // TODO get from config?
 		]);
 		$sympa_lists_rs = $sympa_db->db->query(
-			"SELECT name_list FROM list_table WHERE status_list='open' AND name_list LIKE 'aphec-%'",
+			"SELECT name_list, subject_list FROM list_table WHERE status_list='open' AND name_list LIKE 'aphec%'",
 			\Laminas\Db\Adapter\Adapter::QUERY_MODE_EXECUTE
 		);
 		$sympa_lists = [];
 		foreach($sympa_lists_rs as $sympa_list) {
-			$sympa_lists[] = $sympa_list->name_list;
+			$sympa_lists[$sympa_list->name_list] = $sympa_list->subject_list;
 		}
 
 		// Liste de toutes les matières possibles pour les adhérents
@@ -61,7 +61,7 @@ class AdminListsController extends AbstractPluginController
 		$aphec_lists_rs = $this->zdb->execute($this->zdb->select('aphec_lists')->order('sympa_name'));
 		$aphec_lists = [];
 		foreach($aphec_lists_rs as $aphec_list) {
-			if(!in_array($aphec_list->sympa_name, $sympa_lists)) {
+			if(!array_key_exists($aphec_list->sympa_name, $sympa_lists)) {
 				// Suppressions des listes qui ne sont plus dans Sympa
 				$query = $this->zdb->delete('aphec_lists')->where(function($w) use ($aphec_list) {
 					$w->equalTo('id_list', $aphec_list->id_list);
@@ -81,10 +81,10 @@ class AdminListsController extends AbstractPluginController
 
 		// Ajout des listes ajoutées dans Sympa et pas encore connues dans Galette
 		$seen_aphec_lists = array_map(function ($item) { return $item['name']; }, $aphec_lists);
-		foreach(array_diff($sympa_lists, $seen_aphec_lists) as $list_name) {
+		foreach(array_diff(array_keys($sympa_lists), $seen_aphec_lists) as $list_name) {
 			$query = $this->zdb->insert('aphec_lists')->values([
 				'sympa_name' => $list_name,
-				'sympa_description' => '',
+				'sympa_description' => $sympa_lists[$list_name],
 				'authorized' => 0,
 			]);
 			$entity = $this->zdb->execute($query);
